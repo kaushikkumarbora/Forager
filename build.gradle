@@ -1,0 +1,86 @@
+//
+// Example Module gradle build script. This script uses ForgeGradle and the
+// LiteLoader plugin to provide an easy-to-use development and test environment
+// for Macros modules.
+//
+// You do not need to edit this script, all customisable values can be assigned
+// via the gradle.properties file. However you may wish to add your own custom
+// build logic to this file where necessary.
+// 
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    }
+}
+
+// Read the versions out of the macros version string
+ext {
+    assert macros ==~ /^.+_for_.*$/ : "Macros version specifier was invalid"
+    modVersion = macros.split("_for_")[0]
+    mcVersion = macros.split("_for_")[1]
+}
+
+// Use LiteLoader environment
+apply plugin: 'net.minecraftforge.gradle.liteloader'
+
+// Configure minecraft environment based on properties
+minecraft {
+    version = project.mcVersion
+    mappings = project.mappings
+    runDir = "run"
+}
+
+// Configure macros repository, this is where the API and dev jars will be
+// downloaded from, do not alter this section
+repositories {
+    maven {
+        name = 'mumfrey'
+        url = 'http://repo.mumfrey.com/content/repositories/macros'
+    }
+}
+
+// Depend on macros of the specified version (API is acquired via the dev POM)
+dependencies {
+    deobfCompile "net.eq2online:macrosdev:$modVersion"
+    compile fileTree(dir:'lib', include:'*.jar')
+}
+
+
+afterEvaluate {
+    // Configure eclipse run configurations with the necessary JVM arguments to
+    // inject the project classes into macros at runtime
+    makeEclipseCleanRunClient {
+        arguments = ""
+        jvmArguments = "-Dmacros.modules=" + modules.split(",").collect{mod -> "$basePackage.$mod"}.join(',')
+    }
+    
+    // Get the resolved Macros API version in order to decorate the jar
+    def deobfResolved = configurations.deobfCompile.resolvedConfiguration.resolvedArtifacts
+    def apiVersion = deobfResolved.findAll({it.name == "macrosapi"})[0].moduleVersion.id.version
+
+    // Set the jar name up with the required prefix, and append information
+    // about the API and Macros Mod version
+    jar {
+        baseName = "module_" + archivesBaseName
+        classifier = "$apiVersion-$modVersion-" + jar.classifier
+        extension = "jar"
+    }
+    
+    // Same for the source jar
+    sourceJar {
+        baseName = jar.baseName
+        classifier = jar.classifier + "-sources"
+    }
+}
