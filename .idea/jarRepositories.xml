@@ -46,5 +46,10 @@
       <option name="name" value="mumfrey" />
       <option name="url" value="http://repo.mumfrey.com/content/repositories/macros" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="deobfDeps" />
+      <option name="name" value="deobfDeps" />
+      <option name="url" value="file:/$USER_HOME$/.gradle/caches/minecraft/deobfedDeps" />
+    </remote-repository>
   </component>
 </project>
