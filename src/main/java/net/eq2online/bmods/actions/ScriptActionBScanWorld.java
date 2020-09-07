@@ -1,9 +1,9 @@
-package net.eq2online.example.actions;
+package net.eq2online.bmods.actions;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.api.utils.IPlayerContext;
-import net.eq2online.example.ModuleInfo;
+import net.eq2online.bmods.ModuleInfo;
 import net.eq2online.macros.scripting.api.*;
 import net.eq2online.macros.scripting.parser.ScriptAction;
 import net.eq2online.macros.scripting.parser.ScriptContext;

@@ -1,8 +1,8 @@
-package net.eq2online.example.actions;
+package net.eq2online.bmods.actions;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.utils.BetterBlockPos;
-import net.eq2online.example.ModuleInfo;
+import net.eq2online.bmods.ModuleInfo;
 import net.eq2online.macros.scripting.api.APIVersion;
 import net.eq2online.macros.scripting.api.IMacro;
 import net.eq2online.macros.scripting.api.IMacroAction;

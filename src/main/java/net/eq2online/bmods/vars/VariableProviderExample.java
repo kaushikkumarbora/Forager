@@ -1,6 +1,6 @@
-package net.eq2online.example.vars;
+package net.eq2online.bmods.vars;
 
-import net.eq2online.example.ModuleInfo;
+import net.eq2online.bmods.ModuleInfo;
 import net.eq2online.macros.scripting.api.APIVersion;
 import net.eq2online.macros.scripting.parser.ScriptContext;
 import net.eq2online.macros.scripting.variable.VariableCache;

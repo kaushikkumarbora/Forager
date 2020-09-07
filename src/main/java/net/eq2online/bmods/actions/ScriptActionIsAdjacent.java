@@ -1,12 +1,11 @@
-package net.eq2online.example.actions;
+package net.eq2online.bmods.actions;
 
-import net.eq2online.example.ModuleInfo;
+import net.eq2online.bmods.ModuleInfo;
 import net.eq2online.macros.scripting.api.*;
 import net.eq2online.macros.scripting.parser.ScriptAction;
 import net.eq2online.macros.scripting.parser.ScriptContext;
 import net.eq2online.macros.scripting.parser.ScriptCore;
 import net.eq2online.util.Util;
-import net.minecraft.util.StringUtils;
 
 @APIVersion(ModuleInfo.API_VERSION)
 public class ScriptActionIsAdjacent extends ScriptAction {

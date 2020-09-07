@@ -1,4 +1,4 @@
-package net.eq2online.example;
+package net.eq2online.bmods;
 
 /**
  * Shared information for this module
