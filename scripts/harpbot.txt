@@ -1,0 +1,7 @@
+exec("autoharp1.txt")
+exec("autoharp2.txt")
+exec("autoharp3.txt")
+exec("autoharp4.txt")
+exec("autoharp5.txt")
+exec("autoharp6.txt")
+exec("autoharp7.txt")

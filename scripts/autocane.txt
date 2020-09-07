@@ -1,0 +1,63 @@
+@pause = false
+if(@autofarm)
+    log("Autocane Disabled")
+    unset(@autofarm)
+    stop
+else
+    log("Autocane Enabled")
+    set(@autofarm)
+    #count = 1
+    set(terminateautofarm)
+	#yaw = 309
+	#end = -79
+	&direction = "left"
+    if(GUI == "NONE")
+        pick("golden_hoe","iron_hoe","stone_hoe","diamond_hoe")
+        ifmatches(%ITEM%, "golden_hoe|iron_hoe|diamond_hoe|stone_hoe")
+        else
+            log("STOP AUTOFARM BC NO HOE FOUND")
+            unset(terminateautofarm)
+        endif
+        looks(%#yaw%,0,2)
+        do
+            key(ATTACK)
+			keydown(%&direction%)
+            keydown(FORWARD)
+            if(#count == 20)
+                random(#pitch,0,5)
+                looks(%#yaw%,%#pitch%)
+                #count = 1
+            endif
+            if(YPOS != 32)
+                stop
+            endif
+            if(@pause)
+                do
+                    wait(2000ms)
+                while(@pause)
+                looks(%#yaw%,0,2)
+                pick("golden_hoe","iron_hoe","stone_hoe","diamond_hoe")
+            endif
+            inc(#count)
+			if(XPOS == #end)
+				keyup(%&direction%)
+				keyup(forward)
+				looks(180,0,2)
+				keydown(forward)
+				wait(1000ms)
+				if(#end == -79)
+					#end = 79
+					&direction = right
+					#yaw = 69
+				else
+					#end = -79
+					&direction = left
+					#yaw = 309
+				endif
+				keyup(forward)
+				looks(%#yaw%,0,2)
+			endif
+			wait(1t)
+        while(@autofarm && terminateautofarm)
+    endif
+endif

@@ -1,0 +1,9 @@
+wait(500ms)
+do
+  getslotitem(34,&id)
+  if(&id == "wool")
+    wait(55ms)
+    slotclick(43,3)
+    wait(155ms)
+  endif  
+until(GUI == "NONE")

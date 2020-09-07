@@ -1,0 +1,60 @@
+if(@autoforage)
+    log("Autoforage Disabled")
+    bseldel(-1)
+    unset(@autoforage)
+    stop
+else
+    log("Autoforage Enabled")
+    set(@autoforage)
+    @bbusy = false
+    do
+        bseldel(-1)
+        bscan("log",70,4,2,#pos[])
+        arraysize(#pos[],#size)
+        bfilter(#pos[],-153,-138,-39,-29)
+        bfilter(#pos[],-224,-224,-18,-14)
+        arraysize(#pos[],#size)
+        #block = 1
+        #size = #size-1
+        #fx = 1
+        #fy = 1
+        #fz = 1
+        for(#ctr = 0 to %#size% step 3)
+            #ctry = #ctr + 1
+            #ctrz = #ctr + 2
+            #ylvl = %YPOS% + 3
+            boold = #pos[%#ctry%] < #ylvl
+            if((%#block% == 1) && boold)
+                bselect(%#pos[%#ctr%]%,%#pos[%#ctry%]%,%#pos[%#ctrz%]%,%#pos[%#ctr%]%,%#pos[%#ctry%]%,%#pos[%#ctrz%]%)
+                inc(#block,1)
+                #fx = %#ctr%
+                #fy = %#ctry%
+                #fz = %#ctrz%
+            elseif((%#block% == 3) || (%#block% == 2))
+                bool = isadjacent(%#pos[%#ctr%]%,%#pos[%#ctry%]%,%#pos[%#ctrz%]%,%#pos[%#fx%]%,%#pos[%#fy%]%,%#pos[%#fz%]%,%#block%)
+                if(bool)
+                    bselect(%#pos[%#ctr%]%,%#pos[%#ctry%]%,%#pos[%#ctrz%]%,%#pos[%#ctr%]%,%#pos[%#ctry%]%,%#pos[%#ctrz%]%)
+                    inc(#block,1)                   
+                endif
+            elseif(%#block% == 4)
+                break
+            endif
+        next
+        bexec(sel cleararea)
+        wait(5t)
+        do
+            @bbusy = bisbusy()
+            wait(100ms)
+        while(@bbusy)
+        wait(1000ms)
+        if(@pause)
+            $$<acEnclog.txt>
+            wait(5t)
+            press(18)
+            wait(500ms)
+            press("escape")
+            @pause = false
+        endif
+        bexec(stop)
+    while(true)
+endif

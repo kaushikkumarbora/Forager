@@ -1,0 +1,36 @@
+@pause = true
+log("DUMPING!")
+wait(2t)
+keyup(FORWARD)
+wait(2t)
+looks(90,0,2)
+do
+    keydown(FORWARD)
+until(XPOS == -17)
+wait(1t)
+keyup(FORWARD)
+random(#cyaw,75,155)
+looks(%#cyaw%,51,1)
+echo(/craft)
+wait(10t)
+do(13)
+    slotclick(16,1,false)
+    wait(1t)
+loop
+wait(1t)
+press("escape")
+wait(1t)
+key(USE)
+do
+    wait(1t)
+until(GUI == "GUICHEST")
+do
+    slotclick(81,1,true)
+    wait(10t)
+    getslotitem(81,&item)
+    wait(14t)
+until(&item == "air")
+press("escape")
+wait(10t)
+@pause = false
+log("Resuming to Mine!")

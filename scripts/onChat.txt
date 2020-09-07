@@ -1,0 +1,10 @@
+if(@automine)
+    ifmatches(%CHAT%,".*Your inventory is full!.*")
+        $$<invFull.txt>
+    endif
+endif
+if(@autoforage)
+    ifmatches(%CHAT%,".*Your inventory is full!.*")
+	@pause = true
+    endif
+endif

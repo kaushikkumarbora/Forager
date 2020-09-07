@@ -1,0 +1,51 @@
+@pause = false
+if(@automine)
+    log("Automine Disabled")
+    unset(@automine)
+    stop
+else
+    log("Automine Enabled")
+    set(@automine)
+    #count = 1
+    set(terminateautomine)
+    if(GUI == "NONE")
+        pick("golden_pickaxe","iron_pickaxe","stone_pickaxe","diamond_pickaxe")
+        ifmatches(%ITEM%, "golden_pickaxe|iron_pickaxe|diamond_pickaxe|stone_pickaxe")
+        else
+            log("STOP AUTOMINE BC NO PIC FOUND")
+            unset(terminateautomine)
+        endif
+        looks(270,270,2)
+        do
+            key(ATTACK)
+            keydown(FORWARD)
+            if(#count == 20)
+                random(#pitch,279,270)
+                looks(270,%#pitch%)
+                #count = 1
+            endif
+            if((YPOS != 99) && (YPOS != 98))
+                wait(1t)
+                keyup(forward)
+                wait(1t)
+                looks(0,0,2)
+                wait(1000ms)
+                echo(/skyblock)
+                wait(1000ms)
+                echo(/warp home)
+                do
+                    wait(2000ms)
+                until(YPOS == 99)
+            endif
+            key(ATTACK)
+            if(@pause)
+                do
+                    wait(2000ms)
+                while(@pause)
+                looks(270,270,2)
+                pick("golden_pickaxe","iron_pickaxe","stone_pickaxe","diamond_pickaxe")
+            endif
+            inc(#count)
+        while(@automine && terminateautomine)
+    endif
+endif

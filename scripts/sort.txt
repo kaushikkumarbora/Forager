@@ -1,0 +1,389 @@
+$${
+
+&delaybetweenclicks = "0"
+
+//----------------------------------------------------------
+
+debug = false
+
+unsafe(10000)
+
+	#startslot = -1
+	#endslot = -1
+	if(GUI == "GUIINVENTORY")
+		// Inventory
+		#startslot = 9
+		#endslot = 35
+	elseif(GUI == "GUICHEST")
+		LOG(%CONTAINERSLOTS%)
+		if(CONTAINERSLOTS == 90)
+			// Large Chest
+			#startslot = 0
+			#endslot = 53
+		elseif(CONTAINERSLOTS == 63)
+			// Small chest
+			#startslot = 0
+			#endslot = 26
+		else
+			log("This is not a valid chest.")
+			log("If above is wrong please report following to spthiel:")
+			log("[1] %GUI% %CONTAINERSLOTS%")
+			stop()
+		endif
+	else
+		log("This is not a valid inventory")
+		log("If you'd like this inventory to be added message spthiel about where to find it and give him following info:")
+		log("[2] %GUI% %CONTAINERSLOTS%")
+		stop()
+	endif
+
+
+// Start sorting
+
+//Later checking if it's still the same gui
+&initalgui = %GUI%
+
+if(debug)
+	#startslot = 0
+	#endslot = 2
+endif
+
+// Step 1-3 unsafe 	---------------------------------------------------------------------------------
+
+// Step 1: unset vars
+
+// Inventory through the full process of the sorting
+unset(&inventory[])
+// Amount of items in the stacks through the full process of the sorting
+unset(#inventoryamount[])
+// Datavar of items in the stacks through the full process of the sorting
+unset(#inventorydata[])
+// Sorted inventory
+unset(&inventorysorted[])
+// Stacksizes of sorted inventory
+unset(#inventorysortedamount[])
+// Datavar of items in the stacks through the full process of the sorting
+unset(#inventorysorteddata[])
+
+// Step 2: get inventory
+
+// Loops over part of inventory which is to sort
+for(#slot,%#startslot%,%#endslot%)
+	getslotitem(%#slot%,&id,#stacksize,#data)
+	if(&id != "air")
+		&inventory[%#slot%] = "%&id%"
+		#inventoryamount[%#slot%] = #stacksize
+		#inventorydata[%#slot%] = #data
+		&inventorysorted[%#slot%] = "%&id%"
+		#inventorysortedamount[%#slot%] = #stacksize
+		#inventorysorteddata[%#slot%] = #data
+	endif
+next
+
+if(GUI != &initalgui)
+	log("Please stay in the same inventory whilst sorting")
+	stop()
+endif
+
+// Step pre3: calc arraylength
+
+arraysize(&inventory[],#size)
+dec(#size)
+
+// Step 3: bubblesort sorted inventory (copied java code from http://www.java-programmieren.com/bubblesort-java.php)
+
+if(debug)
+	log("Bubblesort start")
+endif
+
+for(#i,1,%#size%)
+	#size2 = #size-#i
+	for(#j,0,%#size2%)
+		#jup = #j+1
+		&this = %&inventorysorted[%#j%]%
+		#thisdata = %#inventorysorteddata[%#j%]%
+		if(&this != "")
+			#thisid = itemid(%&this%,)
+		else
+			#thisid = 100000
+		endif
+		&up = %&inventorysorted[%#jup%]%
+		#updata = %#inventorysorteddata[%#jup%]%
+		if(&up != "")
+			#upid = itemid(%&up%)
+		else
+			#upid = 100000
+		endif
+		if(debug)
+			bool = ((%#thisid% > %#upid%) || ((%#thisid% == %#upid%) && (%#thisdata% > %#updata%)))
+			log("%#thisid% > %#upid% || ((%#thisid% == %#upid%) && (%#thisdata% > %#updata%)) -> %bool%")
+		endif
+		if((#thisid > #upid) || ((#thisid == #upid) && (#thisdata > #updata)))
+			&temp = %&inventorysorted[%#j%]%
+			#tempamount = %#inventorysortedamount[%#j%]%
+			#tempid = %#inventorysorteddata[%#j%]%
+			&inventorysorted[%#j%] 				= %&inventorysorted[%#jup%]%
+			#inventorysortedamount[%#j%] 	= %#inventorysortedamount[%#jup%]%
+			#inventorysorteddata[%#j%] 		= %#inventorysorteddata[%#jup%]%
+			&inventorysorted[%#jup%] 			= %&temp%
+			#inventorysortedamount[%#jup%]= %#tempamount%
+			#inventorysorteddata[%#jup%] 	= %#tempid%
+		endif
+	next
+next
+
+if(debug)
+	log("Bubblesort end")
+endif
+
+if(debug)
+	foreach(&inventorysorted[],&item,#i)
+		if(&item != "")
+			log("%#i%: %&item%:%#inventorysorteddata[%#i%]%x%#inventorysortedamount[%#i%]%")
+		endif
+	next
+endif
+// Step 3.2: shrink sorted array
+
+
+if(debug)
+	log("Shrinking start")
+endif
+
+arraysize(&inventorysorted[],#size)
+dec(#size,1)
+
+#i = 0
+
+do()
+
+	#iup = #i+1
+	&item = %&inventorysorted[%#i%]%
+	#data = %#inventorysorteddata[%#i%]%
+	&itemup = %&inventorysorted[%#iup%]%
+	#dataup = %#inventorysorteddata[%#iup%]%
+	if((&item == "") || (&itemup == ""))
+		break;
+	endif
+	
+	if((&item == &itemup) && (#data == #dataup))
+	
+		getiteminfo("%&item%:%#data%",,#maxstacksize)
+		#amount = %#inventorysortedamount[%#i%]%
+		#amountup = %#inventorysortedamount[%#iup%]%
+		if(#amount < #maxstacksize)
+		
+			#d = #maxstacksize-#amount
+			if(#d < #amountup)
+				#inventorysortedamount[%#i%] = #maxstacksize
+				#inventorysortedamount[%#iup%] = #amountup - #d
+			else
+			
+				#inventorysortedamount[%#i%] = #amount + #amountup
+				#iupup = #iup+1
+				
+				#sup = #size+1
+				
+				for(#j,%#iupup%,%#sup%)
+				
+					#jdwn = #j-1
+					
+					&inventorysorted[%#jdwn%] = %&inventorysorted[%#j%]%
+					#inventorysortedamount[%#jdwn%] = #inventorysortedamount[%#j%]
+					#inventorysorteddata[%#jdwn%] = #inventorysorteddata[%#j%]
+				
+				next
+				
+				dec(#size)
+				dec(#i)
+			
+			endif
+		
+		endif
+	
+	endif
+	
+	inc(#i)
+		
+while(#i < #size)
+
+
+if(debug)
+	log("Shrinking end")
+endif
+
+endunsafe() 
+// End unsafe 			---------------------------------------------------------------------------------
+
+// Step 4: sort inventory
+
+if(debug)
+	log("Sorting start")
+endif
+
+if(GUI != &initalgui)
+	log("Please stay in the same inventory whilst sorting")
+	stop()
+endif
+
+#slotoffset = #startslot
+
+foreach(&inventorysorted[],&item,#i)
+
+	if(&item != "")
+
+		#data = #inventorysorteddata[%#i%]
+		&itemdmg = "%&item%:%#data%"
+		#amount = #inventorysortedamount[%#i%]
+		#sortslot = #i+#slotoffset
+		
+		getslotitem(%#sortslot%,&checkid,#checkamount,#checkdata)
+		if((&checkid == &item) && (#checkdata == #data))
+			dec(#amount,%#checkamount%)
+			// log("%#amount%")
+		endif
+		
+		putback = false
+		
+		if(&checkid != "air")
+			putback = true
+		endif
+		
+		
+		if(#amount > 0)
+		
+			#startfromslot = #sortslot+1
+			
+			do()
+				getslot(%&itemdmg%,#slot,%#startfromslot%)
+				getslotitem(%#slot%,,#stacksize)
+				if((#stacksize == 0) || (#slot == -1))
+					break;
+				elseif(#stacksize < #amount)
+					dec(#amount,#stacksize)
+					slotclick(%#slot%)
+					if(&delaybetweenclicks != "0")
+						wait(%&delaybetweenclicks%)
+					endif
+					slotclick(%#sortslot%)
+					if(&delaybetweenclicks != "0")
+						wait(%&delaybetweenclicks%)
+					endif
+					if(putback)
+						slotclick(%#slot%)
+						if(&delaybetweenclicks != "0")
+							wait(%&delaybetweenclicks%)
+						endif
+					endif
+				elseif(#stacksize == #amount)
+					slotclick(%#slot%)
+					if(&delaybetweenclicks != "0")
+						wait(%&delaybetweenclicks%)
+					endif
+					slotclick(%#sortslot%)
+					if(&delaybetweenclicks != "0")
+						wait(%&delaybetweenclicks%)
+					endif
+					if(putback)
+						slotclick(%#slot%)
+						if(&delaybetweenclicks != "0")
+							wait(%&delaybetweenclicks%)
+						endif
+					endif
+					break;
+				else
+					slotclick(%#slot%)
+					if(&delaybetweenclicks != "0")
+						wait(%&delaybetweenclicks%)
+					endif
+					slotclick(%#sortslot%)
+					if(&delaybetweenclicks != "0")
+						wait(%&delaybetweenclicks%)
+					endif
+					slotclick(%#slot%)
+					if(putback)
+						slotclick(%#slot%)
+						if(&delaybetweenclicks != "0")
+							wait(%&delaybetweenclicks%)
+						endif
+					endif
+					break;		
+				endif		
+				
+				#startfromslot = #slot
+			loop
+		
+		endif
+		
+	endif
+
+next
+if(debug)
+	log("Sorting end")
+endif
+
+// Step 5: clean up vars
+
+if(debug)
+	foreach(&inventorysorted[],&item,#i)
+		if(&item != "")
+			log("%#i%: %&item%:%#inventorysorteddata[%#i%]%x%#inventorysortedamount[%#i%]%")
+		endif
+	next
+endif
+
+unset(debug)
+unset(bool)
+unset(putback)
+unset(#upid)
+unset(#inventorysorteddata)
+unset(#startslot)
+unset(#data)
+unset(#jup)
+unset(#stacksize)
+unset(#iup)
+unset(#updata)
+unset(#sortslot)
+unset(#thisdata)
+unset(#slot)
+unset(#delaybetweenclicks)
+unset(#sup)
+unset(#amountup)
+unset(#thiddata)
+unset(#size2)
+unset(#endslot)
+unset(#slotoffset)
+unset(#tempid)
+unset(#inventorydata)
+unset(#startfromslot)
+unset(#jdwn)
+unset(#maxstacksize)
+unset(#iupup)
+unset(#amount)
+unset(#thisid)
+unset(#d)
+unset(#i)
+unset(#j)
+unset(#checkamount)
+unset(#size)
+unset(#dataup)
+unset(#tempamount)
+unset(#checkdata)
+unset(#itemup)
+unset(&temp)
+unset(&item)
+unset(&this)
+unset(&itemdmg)
+unset(&id)
+unset(&itemup)
+unset(&up)
+unset(&delaybetweenclicks)
+unset(&initalgui)
+unset(&checkid)
+unset(#inventorysorteddata[])
+unset(#inventoryamount[])
+unset(#inventorysortedamount[])
+unset(#inventorydata[])
+unset(&inventory[])
+unset(&inventorysorted[])
+}$$
