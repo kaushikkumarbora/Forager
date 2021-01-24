@@ -17,11 +17,11 @@ Module for the [Macro/Keybinding](https://www.minecraftforum.net/forums/mapping-
 ## Usage:
 1. Install LiteLoader for Minecraft 1.12.1 from [here](https://www.liteloader.com/download).
 2. Download Macro/Keybind Mod 0.15.4 from [here](https://www.minecraftforum.net/forums/mapping-and-modding-java-edition/minecraft-mods/1275039-macro-keybind-mod#dl) and paste the `.litemod` file in `%appdata%\.minecraft\mods\` folder.
-3. Download NEI module from [here](https://github.com/spthiel/Modules/blob/master/modules/nei/module_NotEnoughInformation-1.1.1-26.1-0.15.4-mc1.12.1.jar), the baritone module and put them in `%appdata%\.minecraft\liteconfig\common\macros\modules` folder.
+3. Download NEI module from [here](https://github.com/spthiel/Modules/blob/master/modules/nei/module_NotEnoughInformation-1.1.1-26.1-0.15.4-mc1.12.1.jar), [Forager](https://github.com/kaushikkumarbora/Forager) v0.1alpha from [here](https://github.com/kaushikkumarbora/Forager/releases) and put them in `%appdata%\.minecraft\liteconfig\common\macros\modules` folder.
 4. Download Baritone from [here](https://github.com/cabaletta/baritone/releases/download/v1.2.14/baritone-api-forge-1.2.14.jar) and put it in `%appdata%\.minecraft\mods\1.12.1` folder. If you don't see a `1.12.1` folder, just create one.
-5. Download the scripts in this repo and paste them in `%appdata%\.minecraft\liteconfig\common\macros` folder.
+5. Download the scripts in the [scripts](https://github.com/kaushikkumarbora/Forager/tree/master/scripts) folder this repo and paste them in `%appdata%\.minecraft\liteconfig\common\macros` folder.
 6. Launch Minecraft Installation version `release 1.12.1-LiteLoader1.12.1` from MC Launcher.
-7. Configure the scripts and use them. You might need to change some harcoded co-ordinates and directions and you are good to go.
+7. Configure the scripts and use them. You might need to change some hardcoded co-ordinates and directions and you are good to go.
 
 ## Version Change:
 
